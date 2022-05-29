@@ -7,8 +7,21 @@ global  _start
  
 _start:
  
+sys_write_string boot_up_message, boot_up_message_len
+
 ; setup listener socket
-_setup_socket:
+_setup_listener_socket:
+
+sys_write_string socket_creation_message, socket_bind_message_len
+
+.create_socket:
+    push byte 6
+    push byte 1
+    push byte 2
+    mov ecx, esp
+    mov ebx, 1
+    mov eax, 102
+    int 80h
 
 
 
