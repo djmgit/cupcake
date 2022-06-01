@@ -1,6 +1,7 @@
 
 
 %include 'macros.asm'
+%include 'util.asm'
 
 SECTION .text
 global  _start
@@ -22,6 +23,28 @@ sys_write_string socket_creation_message, socket_bind_message_len
     mov ebx, 1
     mov eax, 102
     int 80h
+    cmp eax, 0
+    jl quit
+
+.bind_socket:
+    sys_write_string socket_bind_message, socket_bind_message_len
+    mov edi, eax
+    mov dword, 0x00000000
+    push word,  0x2923
+    push word 2
+    mov ecx, esp
+    push byte 16
+    push ecx
+    push edi
+    mov ecx, esp
+    mov ebx, 2
+    mov eax, 102
+    int 80h
+    cmp eax, 0
+    jl quit
+
+_quit:
+    quit
 
 
 
