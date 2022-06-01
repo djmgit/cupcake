@@ -43,6 +43,17 @@ sys_write_string socket_creation_message, socket_bind_message_len
     cmp eax, 0
     jl quit
 
+.listen:
+    sys_write_string socket_listen_attempt_message socket_listen_attempt_message_len
+    push byte 1
+    push edi
+    mov ecx, esp
+    mov ebx, 4
+    mov eax, 102
+    int 80h
+    cmp eax, 0
+    jl quit
+
 _quit:
     quit
 
