@@ -22,6 +22,26 @@
     %endmacro
 %endif
 
+%ifmacro sys_write_string_fd 3
+    %warning "Attempt to redifine sys_write_string_fd macro, ignoring ..."
+%else
+    %macro sys_write_string_fd 3
+        push edx
+        push ecx
+        push ebx
+        push eax
+        mov edx, %3
+        mov ecx, %1
+        mov ebx, %2
+        mov eax, 4
+        int 80h
+        pop eax
+        pop ebx
+        pop ecx
+        pop edx
+    %endmacro
+%endif
+
 %ifmacro sys_read 3
     %warning "Attempt to redefine sys_read macro, ignoring ..."
 %else
@@ -33,7 +53,7 @@
         mov edx, %3
         mov ecx, %2
         mov ebx, %1
-        mov eax, 4
+        mov eax, 3
         int 80h
         pop eax
         pop ebx
