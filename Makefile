@@ -12,4 +12,4 @@ clean-container:
 	docker rm cupcake-debug
 
 clean:
-	rm cupcake/*.o rm cupcake/cupcake
+	rm cupcake/*.o cupcake/cupcake

@@ -77,7 +77,7 @@ sys_write_string socket_creation_message, socket_bind_message_len
 
     jmp .accept
 
-.read
+.read:
     call _read_from_client_socket
 
 .quit:

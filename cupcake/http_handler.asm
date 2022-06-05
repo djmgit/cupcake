@@ -17,6 +17,7 @@ _handle_request:
     mov byte [edx], cl
     inc edx
     inc eax
+    jmp .parse_http_method
 
 .process_http_path:
     mov byte [edx], 0
@@ -30,6 +31,7 @@ _handle_request:
     mov byte [edx], cl
     inc edx
     inc eax
+    jmp .parse_http_path
 
 .process_http_protocol:
     mov byte [edx], 0
@@ -37,12 +39,13 @@ _handle_request:
     inc eax
 
 .parse_http_protocol:
-    cmp byte [eax], 20h
+    cmp byte [eax], 2Fh
     jz .process_http_version
     mov cl, byte [eax]
     mov byte [edx], cl
     inc edx
     inc eax
+    jmp .parse_http_protocol
 
 .process_http_version:
     mov byte [edx], 0
@@ -51,12 +54,18 @@ _handle_request:
 
 .parse_http_version:
     cmp byte [eax], 0Ah
-    jz _send_response
+    jz .display
     mov cl, byte [eax]
     mov byte [edx], cl
     inc edx
     inc eax
+    jmp .parse_http_version
 
+.display:
+    sys_write_string http_method, 10
+    sys_write_string http_path, 255
+    sys_write_string http_protocol, 10
+    sys_write_string http_version, 3
 
 _send_response:
     sys_write_string_fd response_http_ok, esi, 78
@@ -67,7 +76,7 @@ _send_response:
     int 80h
     ret
 
-SECTION .bss:
+SECTION .bss
 http_method resb 10
 http_path resb 255
 http_protocol resb 10
