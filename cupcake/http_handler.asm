@@ -3,11 +3,11 @@
 %include 'file_handler.asm'
 
 read_from_client_socket:
-    sys_read esi, response_buffer, 255
-    sys_write_string response_buffer, 255
+    sys_read esi, request_buffer, 255
+    sys_write_string request_buffer, 255
 
 _handle_request:
-    mov eax, response_buffer
+    mov eax, request_buffer
     call process_http_request
 
 _generate_response:

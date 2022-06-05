@@ -95,5 +95,7 @@ socket_listen_attempt_message_len       equ     $-socket_listen_attempt_message
 socket_listening_message        db      'Cupcake is listenning for new connections ...', 0Ah, 0
 socket_listening_message_len        equ     $-socket_listening_message
 response_http_ok db 'HTTP/1.1 200 OK', 0Dh, 0Ah, 'Content-Type: text/html', 0Dh, 0Ah, 'Content-Length: 14', 0Dh, 0Ah, 0Dh, 0Ah, 'Hello World!', 0Dh, 0Ah, 0h
+response_http_prefix db 'HTTP/1.1 200 OK', 0Dh, 0Ah, 'Content-Type: text/html', 0Dh, 0Ah, 'Content-Length: 14', 0Dh, 0Ah, 0Dh, 0Ah
+response_http_prefix_len equ $-response_http_prefix
 test_msg db 'test test', 0Ah, 0
 test_msg_len equ $-test_msg
