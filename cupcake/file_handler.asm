@@ -33,11 +33,16 @@ generate_response_from_file:
     je .close_file
     add dword [bytecount], eax
 
-.print_byte:
-    sys_write_string content, 1
+.copy_byte_to_destination:
+    mov ecx, dword [bytecount]
+    mov bl, byte [content]
+    mov byte [file_content_buffer + ecx], bl
     jmp .set_seek_offset
 
 .close_file:
+    mov ecx, dword [bytecount]
+    mov byte [file_content_buffer + ecx], 0
+    sys_write_string file_content_buffer, 255
     mov ebx, [fd_in]
     mov eax, 6
     int 80h
