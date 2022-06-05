@@ -78,7 +78,7 @@ sys_write_string socket_creation_message, socket_bind_message_len
     jmp .accept
 
 .read:
-    call _read_from_client_socket
+    call read_from_client_socket
 
 .quit:
     sys_quit
@@ -97,8 +97,3 @@ socket_listening_message_len        equ     $-socket_listening_message
 response_http_ok db 'HTTP/1.1 200 OK', 0Dh, 0Ah, 'Content-Type: text/html', 0Dh, 0Ah, 'Content-Length: 14', 0Dh, 0Ah, 0Dh, 0Ah, 'Hello World!', 0Dh, 0Ah, 0h
 test_msg db 'test test', 0Ah, 0
 test_msg_len equ $-test_msg
-
-SECTION .bss
-response_buffer resb 512
-file_content_buffer resb 255
-
