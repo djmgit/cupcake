@@ -3,6 +3,7 @@
 process_http_request:
     push edx
     push ecx
+    push eax
     mov edx, http_method
 
 .parse_http_method:
@@ -57,6 +58,7 @@ process_http_request:
     jmp .parse_http_version
 
 .http_request_processing_finished:
+    pop eax
     pop ecx
     pop edx
     ret
