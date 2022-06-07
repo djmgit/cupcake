@@ -16,13 +16,45 @@ _generate_response:
     call generate_response_from_file
 
 .display:
-    sys_write_string http_method, 10
-    sys_write_string http_path, 255
-    sys_write_string http_protocol, 10
-    sys_write_string http_version, 3
+    ;sys_write_string http_method, 10
+    ;sys_write_string http_path, 255
+    ;sys_write_string http_protocol, 10
+    ;sys_write_string http_version, 3
+
+_generate_http_response_string:
+    mov eax, response_http_prefix
+    push esi
+    push edi
+    mov edi, response_buffer
+.copy_prefix:
+    cmp byte [eax], 0
+    jz .copy_content
+    mov bl, byte[eax]
+    mov byte[edi], bl
+    inc eax
+    inc edi
+    jmp .copy_prefix
+    mov eax, file_content_buffer
+
+.copy_content:
+    cmp byte [eax], 0
+    jz .response_string_generated
+    mov bl, byte [eax]
+    mov byte [edi], bl
+    inc eax
+    inc edi
+    jmp .copy_content
+
+.response_string_generated:
+    mov byte [edi], 0Dh
+    inc edi
+    mov byte [edi], 0Ah
+    pop edi
+    pop esi
+    sys_write_string response_buffer, 512
 
 _send_response:
-    sys_write_string_fd response_http_ok, esi, 78
+    sys_write_string_fd response_buffer, esi, 512
 
 .close:
     mov ebx, esi
