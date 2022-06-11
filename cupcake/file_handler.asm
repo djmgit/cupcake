@@ -31,18 +31,18 @@ generate_response_from_file:
 .eof_check:
     cmp eax, 0
     je .close_file
-    add dword [bytecount], eax
 
 .copy_byte_to_destination:
     mov ecx, dword [bytecount]
     mov bl, byte [content]
     mov byte [file_content_buffer + ecx], bl
+    add dword [bytecount], eax
     jmp .set_seek_offset
 
 .close_file:
     mov ecx, dword [bytecount]
     mov byte [file_content_buffer + ecx], 0
-    ;sys_write_string file_content_buffer, 255
+    sys_write_string file_content_buffer, 255
     mov ebx, [fd_in]
     mov eax, 6
     int 80h

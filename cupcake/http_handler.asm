@@ -23,7 +23,6 @@ _generate_response:
 
 _generate_http_response_string:
     mov eax, response_http_prefix
-    push esi
     push edi
     mov edi, response_buffer
 .copy_prefix:
@@ -50,11 +49,10 @@ _generate_http_response_string:
     inc edi
     mov byte [edi], 0Ah
     pop edi
-    pop esi
-    sys_write_string response_buffer, 512
+    sys_write_string response_buffer, 2048
 
 _send_response:
-    sys_write_string_fd response_buffer, esi, 512
+    sys_write_string_fd response_buffer, esi, 2048
 
 .close:
     mov ebx, esi
