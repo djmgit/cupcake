@@ -111,3 +111,4 @@ file_content_buffer resb 255
 fd_in resd 1                                ; varibale from file descriptor
 content resb 1                              ; variable from content
 bytecount resd 1                            ; variable for bytecount
+content_length resb 4

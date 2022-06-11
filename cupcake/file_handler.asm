@@ -1,4 +1,5 @@
 %include 'macros.asm'
+%include 'util.asm'
 
 generate_response_from_file:
     push edx
@@ -46,6 +47,10 @@ generate_response_from_file:
     mov ebx, [fd_in]
     mov eax, 6
     int 80h
+    mov eax, ecx
+    mov ebx, content_length
+    call itoa
+    sys_write_string content_length, 4
 
 .finished_response_generation:
     pop eax
