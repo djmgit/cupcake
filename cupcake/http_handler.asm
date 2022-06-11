@@ -4,7 +4,7 @@
 
 read_from_client_socket:
     sys_read esi, request_buffer, 255
-    sys_write_string request_buffer, 255
+    ;sys_write_string request_buffer, 255
 
 _handle_request:
     mov eax, request_buffer
@@ -27,12 +27,14 @@ _generate_http_response_string:
     mov edi, response_buffer
 .copy_prefix:
     cmp byte [eax], 0
-    jz .copy_content
+    jz .load_file_content_buffer
     mov bl, byte[eax]
     mov byte[edi], bl
     inc eax
     inc edi
     jmp .copy_prefix
+
+.load_file_content_buffer:
     mov eax, file_content_buffer
 
 .copy_content:
@@ -49,26 +51,13 @@ _generate_http_response_string:
     inc edi
     mov byte [edi], 0Ah
     pop edi
-    sys_write_string response_buffer, 2048
+    sys_write_string response_buffer, 512
 
 _send_response:
-    sys_write_string_fd response_buffer, esi, 2048
+    sys_write_string_fd response_http_ok, esi, 512
 
 .close:
     mov ebx, esi
     mov eax, 6
     int 80h
     ret
-
-SECTION .bss
-http_method resb 10
-http_path resb 255
-http_protocol resb 10
-http_version resb 3
-request_buffer resb 255
-response_buffer resb 512
-file_content_buffer resb 255
-fd_in resd 1                                ; varibale from file descriptor
-content resb 1                              ; variable from content
-bytecount resd 1                            ; variable for bytecount
-

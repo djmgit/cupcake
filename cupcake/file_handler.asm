@@ -42,7 +42,7 @@ generate_response_from_file:
 .close_file:
     mov ecx, dword [bytecount]
     mov byte [file_content_buffer + ecx], 0
-    sys_write_string file_content_buffer, 255
+    ;sys_write_string file_content_buffer, 255
     mov ebx, [fd_in]
     mov eax, 6
     int 80h
