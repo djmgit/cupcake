@@ -95,7 +95,8 @@ socket_listen_attempt_message_len       equ     $-socket_listen_attempt_message
 socket_listening_message        db      'Cupcake is listenning for new connections ...', 0Ah, 0
 socket_listening_message_len        equ     $-socket_listening_message
 response_http_ok db 'HTTP/1.1 200 OK', 0Dh, 0Ah, 'Content-Type: text/html', 0Dh, 0Ah, 'Content-Length: 40', 0Dh, 0Ah, 0Dh, 0Ah, '<html><head><h1>Hello</h1></head></html>', 0Dh, 0Ah, 0
-response_http_prefix db 'HTTP/1.1 200 OK', 0Dh, 0Ah, 'Content-Type: text/html', 0Dh, 0Ah, 'Content-Length: 512', 0Dh, 0Ah, 0Dh, 0Ah, 0
+response_http_prefix db 'HTTP/1.1 200 OK', 0Dh, 0Ah, 'Content-Type: text/html', 0Dh, 0Ah, 0
+content_length_header_prefix db 'Content-Length: ', 0
 response_http_prefix_len equ $-response_http_prefix
 test_msg db 'test test', 0Ah, 0
 test_msg_len equ $-test_msg
@@ -106,8 +107,8 @@ http_path resb 255
 http_protocol resb 10
 http_version resb 3
 request_buffer resb 255
-response_buffer resb 512
-file_content_buffer resb 255
+response_buffer resb 2048
+file_content_buffer resb 1024
 fd_in resd 1                                ; varibale from file descriptor
 content resb 1                              ; variable from content
 bytecount resd 1                            ; variable for bytecount

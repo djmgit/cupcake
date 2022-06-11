@@ -1,11 +1,6 @@
 
 
-; function is responsible for invoking sys_exit
-quit:
-    mov     ebx, 0
-    mov     eax, 1
-    int     80h
-
+; function is responsible for converting integer to ascii and store it in given memory
 itoa:
     push eax
     push ebx

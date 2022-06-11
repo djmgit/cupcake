@@ -43,14 +43,12 @@ generate_response_from_file:
 .close_file:
     mov ecx, dword [bytecount]
     mov byte [file_content_buffer + ecx], 0
-    ;sys_write_string file_content_buffer, 255
     mov ebx, [fd_in]
     mov eax, 6
     int 80h
     mov eax, ecx
     mov ebx, content_length
     call itoa
-    sys_write_string content_length, 4
 
 .finished_response_generation:
     pop eax
@@ -58,5 +56,3 @@ generate_response_from_file:
     pop ecx
     pop edx
     ret
-
-;SECTION .bss

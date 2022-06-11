@@ -27,14 +27,46 @@ _generate_http_response_string:
     mov edi, response_buffer
 .copy_prefix:
     cmp byte [eax], 0
-    jz .load_file_content_buffer
+    jz .load_content_length_header_prefix
     mov bl, byte[eax]
     mov byte[edi], bl
     inc eax
     inc edi
     jmp .copy_prefix
 
-.load_file_content_buffer:
+.load_content_length_header_prefix:
+    mov eax, content_length_header_prefix
+
+.copy_content_length_header_prefix:
+    cmp byte [eax], 0
+    jz .load_content_length
+    mov bl, byte [eax]
+    mov byte [edi], bl
+    inc eax
+    inc edi
+    jmp .copy_content_length_header_prefix
+
+.load_content_length:
+    mov eax, content_length
+
+.copy_content_length:
+    cmp byte [eax], 0
+    jz .load_content
+    mov bl, byte [eax]
+    mov byte [edi], bl
+    inc eax
+    inc edi
+    jmp .copy_content_length
+
+.load_content:
+    mov byte [edi], 0Dh
+    inc edi
+    mov byte [edi], 0Ah
+    inc edi
+    mov byte [edi], 0Dh
+    inc edi
+    mov byte [edi], 0Ah
+    inc edi
     mov eax, file_content_buffer
 
 .copy_content:
@@ -51,10 +83,10 @@ _generate_http_response_string:
     inc edi
     mov byte [edi], 0Ah
     pop edi
-    sys_write_string response_buffer, 512
+    sys_write_string response_buffer, 2048
 
 _send_response:
-    sys_write_string_fd response_http_ok, esi, 512
+    sys_write_string_fd response_buffer, esi, 2048
 
 .close:
     mov ebx, esi
