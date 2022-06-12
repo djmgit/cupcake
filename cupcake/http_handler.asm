@@ -13,6 +13,8 @@ _handle_request:
 _generate_response:
     mov eax, http_path
     inc eax                             ; this is done to avoid the starting '/'
+    call generate_content_path
+    mov eax, content_path
     call generate_response_from_file
 
 .display:

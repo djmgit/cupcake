@@ -1,14 +1,17 @@
 
 
 %include 'macros.asm'
-;%include 'util.asm'
 %include 'http_handler.asm'
 
 SECTION .text
 global  _start
  
 _start:
- 
+
+pop eax
+pop eax
+pop eax
+call parse_docroot
 sys_write_string boot_up_message, boot_up_message_len
 
 ; setup listener socket
@@ -113,3 +116,5 @@ fd_in resd 1                                ; varibale from file descriptor
 content resb 1                              ; variable from content
 bytecount resd 1                            ; variable for bytecount
 content_length resb 4
+docroot resb 255
+content_path resb 512
