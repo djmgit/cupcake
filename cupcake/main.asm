@@ -100,6 +100,7 @@ socket_listening_message_len        equ     $-socket_listening_message
 response_http_ok db 'HTTP/1.1 200 OK', 0Dh, 0Ah, 'Content-Type: text/html', 0Dh, 0Ah, 'Content-Length: 40', 0Dh, 0Ah, 0Dh, 0Ah, '<html><head><h1>Hello</h1></head></html>', 0Dh, 0Ah, 0
 response_http_prefix db 'HTTP/1.1 200 OK', 0Dh, 0Ah, 'Content-Type: text/html', 0Dh, 0Ah, 0
 content_length_header_prefix db 'Content-Length: ', 0
+response_http_not_found db 'HTTP/1.1 404 NOT FOUND', 0Dh, 0Ah, 'Content-Type: text/html', 0Dh, 0Ah, 'Content-Length: 106', 0Dh, 0Ah, 0Dh, 0Ah, '<html><head><h1>Not Found</h1></head><body><p>Requested content not found on this server</p></body></html>', 0Dh, 0Ah, 0
 response_http_prefix_len equ $-response_http_prefix
 test_msg db 'test test', 0Ah, 0
 test_msg_len equ $-test_msg

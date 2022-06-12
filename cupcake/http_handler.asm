@@ -4,7 +4,6 @@
 
 read_from_client_socket:
     sys_read esi, request_buffer, 255
-    ;sys_write_string request_buffer, 255
 
 _handle_request:
     mov eax, request_buffer
@@ -17,11 +16,14 @@ _generate_response:
     mov eax, content_path
     call generate_response_from_file
 
-.display:
-    ;sys_write_string http_method, 10
-    ;sys_write_string http_path, 255
-    ;sys_write_string http_protocol, 10
-    ;sys_write_string http_version, 3
+_check_for_content_not_found:
+    mov eax, file_content_buffer
+    cmp byte [eax], 0
+    jnz _generate_http_response_string
+
+.return_404:
+    sys_write_string_fd response_http_not_found, esi, 2048
+    jmp _close
 
 _generate_http_response_string:
     mov eax, response_http_prefix
@@ -85,12 +87,11 @@ _generate_http_response_string:
     inc edi
     mov byte [edi], 0Ah
     pop edi
-    sys_write_string response_buffer, 2048
 
 _send_response:
     sys_write_string_fd response_buffer, esi, 2048
 
-.close:
+_close:
     mov ebx, esi
     mov eax, 6
     int 80h

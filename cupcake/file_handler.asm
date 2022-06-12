@@ -12,6 +12,8 @@ generate_response_from_file:
     mov ebx, eax
     mov eax, 5
     int 80h
+    cmp eax, 0
+    jl .finished_response_generation
     mov [fd_in], eax
     mov dword [bytecount], dword 0h
 
