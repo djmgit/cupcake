@@ -22,46 +22,52 @@
     %endmacro
 %endif
 
+; This macro prints a string to a given fd
+; Usage: sys_write_string_fd <source_memory_location>, <fd>, <number_of_bytes_to_Write>
 %ifmacro sys_write_string_fd 3
     %warning "Attempt to redifine sys_write_string_fd macro, ignoring ..."
 %else
     %macro sys_write_string_fd 3
-        push edx
+        push edx                                ; save edx, ecx, ebx and eax on stack
         push ecx
         push ebx
         push eax
-        mov edx, %3
-        mov ecx, %1
-        mov ebx, %2
-        mov eax, 4
-        int 80h
-        pop eax
+        mov edx, %3                             ; put third arg that is number of bytes to write in edx
+        mov ecx, %1                             ; put source memory location in ecx
+        mov ebx, %2                             ; put destination fd in ebx
+        mov eax, 4                              ; sys_write syscall
+        int 80h                                 ; invoke kernal
+        pop eax                                 ; restore eax, ebx, ecx and edx
         pop ebx
         pop ecx
         pop edx
     %endmacro
 %endif
 
+; This macro reads bytes from a given source fd to destination memory
+; Usage sys_read <source_fd>, <destination_memory_location>, <number_of_bytes_to_read>
 %ifmacro sys_read 3
     %warning "Attempt to redefine sys_read macro, ignoring ..."
 %else
     %macro sys_read 3
-        push edx
+        push edx                                ; save edx, ecx, ebx and eax on stack
         push ecx
         push ebx
         push eax
-        mov edx, %3
-        mov ecx, %2
-        mov ebx, %1
-        mov eax, 3
-        int 80h
-        pop eax
+        mov edx, %3                             ; store number of bytes in edx
+        mov ecx, %2                             ; store destination memory location in ecx
+        mov ebx, %1                             ; store source fd in ebx
+        mov eax, 3                              ; sys_read syscall
+        int 80h                                 ; invoke kernel
+        pop eax                                 ; restore eax, ebx, ecx, edx
         pop ebx
         pop ecx
         pop edx
     %endmacro
 %endif
 
+; This macro exists the running code
+; Usage: sys_quit
 %ifmacro sys_quit 0
     %warning "Attempt to redefine sys_quit macro, ignoring ..."
 %else
