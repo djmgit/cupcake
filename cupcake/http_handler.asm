@@ -2,12 +2,18 @@
 %include 'http_request_parser.asm'
 %include 'file_handler.asm'
 
+; Subroutine to read request data from accepted connection socket
+; and then generate response
+; Usage: call read_from_client_socket
+;        expects accpeted client connection in esi
 read_from_client_socket:
-    sys_read esi, request_buffer, 255
+    sys_read esi, request_buffer, 255                               ; read request data from socket fd in esi. As of now we are only interested in the first line of the request. So randomly 255 has been hardcoded.
+                                                                    ; This might not be ideal way since we path exceeds 255 bytes we might not be able to parse properly but dont want to
+                                                                    ; make this more complicated as of now.
 
 _handle_request:
-    mov eax, request_buffer
-    call process_http_request
+    mov eax, request_buffer                                         ; move memory location of request data into eax
+    call process_http_request                                       ; process the request's first line to extract required parameters
 
 _generate_response:
     mov eax, http_path

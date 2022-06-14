@@ -72,8 +72,8 @@
     %warning "Attempt to redefine sys_quit macro, ignoring ..."
 %else
     %macro sys_quit 0
-        mov     ebx, 0
-        mov     eax, 1
-        int     80h
+        mov     ebx, 0                          ; mov exit status code to ebx
+        mov     eax, 1                          ; sys_exit
+        int     80h                             ; invoke kernel
     %endmacro
 %endif
