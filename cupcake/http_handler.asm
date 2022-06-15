@@ -17,44 +17,44 @@ _handle_request:
 
 _generate_response:
     mov eax, http_path
-    inc eax                             ; this is done to avoid the starting '/'
-    call generate_content_path
-    mov eax, content_path
-    call generate_response_from_file
+    inc eax                                                         ; this is done to avoid the starting '/'
+    call generate_content_path                                      ; generate the resource location to access
+    mov eax, content_path                                           ; move resource location to eax
+    call generate_response_from_file                                ; generate response content
 
-_check_for_content_not_found:
+_check_for_content_not_found:                                       ; block to check wether resource could be read or not
     mov eax, file_content_buffer
-    cmp byte [eax], 0
-    jnz _generate_http_response_string
+    cmp byte [eax], 0                                               ; check if the read content starts with null. This is the only check we are doing as of now
+    jnz _generate_http_response_string                              ; if not null we proceed
 
 .return_404:
-    sys_write_string_fd response_http_not_found, esi, 2048
-    jmp _close
+    sys_write_string_fd response_http_not_found, esi, 2048          ; write predefined 404 response to socket
+    jmp _close                                                      ; close socket, we are done
 
-_generate_http_response_string:
-    mov eax, response_http_prefix
-    push edi
-    mov edi, response_buffer
-.copy_prefix:
-    cmp byte [eax], 0
-    jz .load_content_length_header_prefix
-    mov bl, byte[eax]
-    mov byte[edi], bl
-    inc eax
-    inc edi
-    jmp .copy_prefix
+_generate_http_response_string:                                     ; block to generate the final http response string which will contain the http response. headers and the content read
+    mov eax, response_http_prefix                                   ; move the response http prefix to eax. This is typically HTTP/1.1 200 OK
+    push edi                                                        ; save edi
+    mov edi, response_buffer                                        ; use edi to hold response buffer/memory location
+.copy_prefix:                                                       ; block to copy http prefix to response buffer
+    cmp byte [eax], 0                                               ; we start with check wether we have reached the end
+    jz .load_content_length_header_prefix                           ; if null then we have reached end, start with copying content_length header prefix
+    mov bl, byte[eax]                                               ; move byte from eax to bl
+    mov byte[edi], bl                                               ; move bl to edi which holds a byte location in response buffer
+    inc eax                                                         ; increment eax
+    inc edi                                                         ; increment edi
+    jmp .copy_prefix                                                ; loop
 
 .load_content_length_header_prefix:
-    mov eax, content_length_header_prefix
+    mov eax, content_length_header_prefix                           ; load content_length header prefix to eax
 
 .copy_content_length_header_prefix:
-    cmp byte [eax], 0
-    jz .load_content_length
-    mov bl, byte [eax]
+    cmp byte [eax], 0                                               ; we once again start with comaparing with null
+    jz .load_content_length                                         ; if 0 then starting copying the content_length
+    mov bl, byte [eax]                                              ; once again the content to response buffer pointed by edi
     mov byte [edi], bl
     inc eax
-    inc edi
-    jmp .copy_content_length_header_prefix
+    inc edi                                                         ; increment the desired registers
+    jmp .copy_content_length_header_prefix                          ; loop
 
 .load_content_length:
     mov eax, content_length
