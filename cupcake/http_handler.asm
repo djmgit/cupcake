@@ -57,10 +57,10 @@ _generate_http_response_string:                                     ; block to g
     jmp .copy_content_length_header_prefix                          ; loop
 
 .load_content_length:
-    mov eax, content_length
+    mov eax, content_length                                         ; move memory location of content length to eax
 
 .copy_content_length:
-    cmp byte [eax], 0
+    cmp byte [eax], 0                                               ; copy the content length from source memory location to response buffer just like previous blocks
     jz .load_content
     mov bl, byte [eax]
     mov byte [edi], bl
@@ -69,7 +69,7 @@ _generate_http_response_string:                                     ; block to g
     jmp .copy_content_length
 
 .load_content:
-    mov byte [edi], 0Dh
+    mov byte [edi], 0Dh                                             ; after the end of the headers we need to have a blank line which is basically 0D0A0D0A in hex
     inc edi
     mov byte [edi], 0Ah
     inc edi
@@ -77,10 +77,10 @@ _generate_http_response_string:                                     ; block to g
     inc edi
     mov byte [edi], 0Ah
     inc edi
-    mov eax, file_content_buffer
+    mov eax, file_content_buffer                                    ; after that load the memory location of file_content_buffer which is the resource we read to eax
 
 .copy_content:
-    cmp byte [eax], 0
+    cmp byte [eax], 0                                               ; copy the resource content from its source memory location to response buffer from existing offset
     jz .response_string_generated
     mov bl, byte [eax]
     mov byte [edi], bl
@@ -89,16 +89,16 @@ _generate_http_response_string:                                     ; block to g
     jmp .copy_content
 
 .response_string_generated:
-    mov byte [edi], 0Dh
+    mov byte [edi], 0Dh                                             ; We are almost done, all we need to do now is add a new line at the end which is basically 0D0A
     inc edi
     mov byte [edi], 0Ah
     pop edi
 
 _send_response:
-    sys_write_string_fd response_buffer, esi, 2048
+    sys_write_string_fd response_buffer, esi, 2048                  ; finally we right the generated response string to client socket
 
 _close:
-    mov ebx, esi
+    mov ebx, esi                                                    ; after response is sent we close the client socket
     mov eax, 6
     int 80h
-    ret
+    ret                                                             ; return from subroutine
