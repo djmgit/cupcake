@@ -28,36 +28,36 @@ generate_response_from_file:
     int 80h                                                 ; invoke kernel
 
 .read_byte:
-    mov edx, 1
-    mov ecx, content
-    mov ebx, [fd_in]
-    mov eax, 3
-    int 80h
+    mov edx, 1                                              ; we want to read 1 byte, since we are reading byte by byte
+    mov ecx, content                                        ; move memory location of content to ecx
+    mov ebx, [fd_in]                                        ; move fd to ebx
+    mov eax, 3                                              ; move sys_read syscall number to eax
+    int 80h                                                 ; invoke kernel
 
 .eof_check:
-    cmp eax, 0
-    je .close_file
+    cmp eax, 0                                              ; check we are at the end
+    je .close_file                                          ; if we are at the end then close the file
 
 .copy_byte_to_destination:
-    mov ecx, dword [bytecount]
-    mov bl, byte [content]
-    mov byte [file_content_buffer + ecx], bl
-    add dword [bytecount], eax
-    jmp .set_seek_offset
+    mov ecx, dword [bytecount]                              ; move bytecount counter to ecx
+    mov bl, byte [content]                                  ; move the byte we just read to bl
+    mov byte [file_content_buffer + ecx], bl                ; move the byte read from bl to correct position in the file_content_buffer memory which can be calculated using ecx as offset
+    add dword [bytecount], eax                              ; add value at eax, which is the number of bytes read (1) to bytecount to increase our counter aka offset
+    jmp .set_seek_offset                                    ; loop
 
 .close_file:
     mov ecx, dword [bytecount]
-    mov byte [file_content_buffer + ecx], 0
-    mov ebx, [fd_in]
-    mov eax, 6
-    int 80h
-    mov eax, ecx
-    mov ebx, content_length
-    call itoa
+    mov byte [file_content_buffer + ecx], 0                 ; we now null terminate our file content
+    mov ebx, [fd_in]                                        ; move fd to ebx
+    mov eax, 6                                              ; mov sys_close syscall number to eax
+    int 80h                                                 ; invoke kernel
+    mov eax, ecx                                            ; move ecx to eax
+    mov ebx, content_length                                 ; move content_length memory location to ebx
+    call itoa                                               ; we convert content_length from int to string (ascii string) and store it in content_length memory location
 
 .finished_response_generation:
-    pop eax
+    pop eax                                                 ; restore all the save resgisters
     pop ebx
     pop ecx
     pop edx
-    ret
+    ret                                                     ; return
