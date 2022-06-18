@@ -8,56 +8,57 @@ global  _start
  
 _start:
 
-pop eax
-pop eax
-pop eax
-call parse_docroot
-sys_write_string boot_up_message, boot_up_message_len
+pop eax                                                                             ; pop eax, this number of cmdline args
+pop eax                                                                             ; pop eax, this is the name of the program
+pop eax                                                                             ; pop eax, this is the cmdline arg provided for docroot
+call parse_docroot                                                                  ; call parse_docroot to move docroot to dedicated variable
+sys_write_string boot_up_message, boot_up_message_len                               ; show booting message
 
 ; setup listener socket
 _setup_listener_socket:
 
 sys_write_string socket_creation_message, socket_creation_message_len
 
+; create a new socket
 .create_socket:
-    push byte 6
-    push byte 1
-    push byte 2
-    mov ecx, esp
-    mov ebx, 1
-    mov eax, 102
-    int 80h
-    cmp eax, 0
-    jl .quit
+    push byte 6                                                                     ; IPPROTO_TCP
+    push byte 1                                                                     ; SOCK_STREAM
+    push byte 2                                                                     ; PF_INET
+    mov ecx, esp                                                                    ; mov address of argument into ecx
+    mov ebx, 1                                                                      ; invoke SOCKET (1)
+    mov eax, 102                                                                    ; syscall number for sys_socketcall
+    int 80h                                                                         ; invoke kernel
+    cmp eax, 0                                                                      ; eax should receive the fd of the created socket.
+    jl .quit                                                                        ; if less then 0 means error, quit
 
 .bind_socket:
-    sys_write_string socket_bind_message, socket_bind_message_len
-    mov edi, eax
-    push dword 0x00000000
-    push word 0x2923
-    push word 2
-    mov ecx, esp
-    push byte 16
-    push ecx
-    push edi
-    mov ecx, esp
-    mov ebx, 2
-    mov eax, 102
-    int 80h
-    cmp eax, 0
-    jl .quit
+    sys_write_string socket_bind_message, socket_bind_message_len                   ; show bind message and start with socket binding to IP:PORT
+    mov edi, eax                                                                    ; move socket fd to edi
+    push dword 0x00000000                                                           ; IP : 0.0.0.0
+    push word 0x2923                                                                ; PORT : 9001, in reverse byte order hex
+    push word 2                                                                     ; AF_INET
+    mov ecx, esp                                                                    ; move address of previous arguments to ecx
+    push byte 16                                                                    ; arguments length
+    push ecx                                                                        ; push args address
+    push edi                                                                        ; push socket fd onto stack
+    mov ecx, esp                                                                    ; move address of args to ecx
+    mov ebx, 2                                                                      ; invoke BIND (2)
+    mov eax, 102                                                                    ; move syscall number sys_socketcall to eax
+    int 80h                                                                         ; invoke kernel
+    cmp eax, 0                                                                      ; compare eax with 0
+    jl .quit                                                                        ; if less than 0, which is error condition, quit
 
 .listen:
-    sys_write_string socket_listen_attempt_message, socket_listen_attempt_message_len
-    push byte 1
-    push edi
-    mov ecx, esp
-    mov ebx, 4
-    mov eax, 102
-    int 80h
-    cmp eax, 0
-    jl .quit
-    sys_write_string socket_listening_message, socket_listening_message_len
+    sys_write_string socket_listen_attempt_message, socket_listen_attempt_message_len               ; show listen and start with listenning process
+    push byte 1                                                                                     ; queue length : 1
+    push edi                                                                                        ; push socket fd on stack
+    mov ecx, esp                                                                                    ; move address of arguments to esp
+    mov ebx, 4                                                                                      ; invoke LISTEN (4)
+    mov eax, 102                                                                                    ; syscall number for sys_socketcall
+    int 80h                                                                                         ; invoke kernel
+    cmp eax, 0                                                                                      ; check for error
+    jl .quit                                                                                        ; if error, quit
+    sys_write_string socket_listening_message, socket_listening_message_len                         ; show message to imply socket has started to listen for connections
 
 .accept:
     push byte 0
