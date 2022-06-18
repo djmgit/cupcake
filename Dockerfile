@@ -4,7 +4,7 @@
 FROM ubuntu:18.04
 
 WORKDIR /cupcake
-ADD cupcake /cupcake/cupcake
+ADD cupcake /cupcake
 ADD build.sh /cupcake
 
 # install dependencies

@@ -2,7 +2,6 @@
 
 set -e
 
-cd cupcake
 echo "Building main.asm ..."
 nasm -f elf main.asm
 if [ `echo $?` != 0 ]; then
@@ -17,6 +16,12 @@ if [ `echo $?` != 0 ]; then
 fi
 echo 'Linking succeeded, proceeding with running'
 
+if  [ "$mode" = "debug" ]
+then
+    echo "To run : ./cupcake <path_to_docroot>"
+    exit 0
+fi
+
 cd ..
 if [ ! -d "dist" ]
 then
@@ -24,6 +29,5 @@ then
 fi
 
 echo "copying binary to dist"
-cp cupcake/cupcake dist/
-
-rm cupcake/main.o cupcake/cupcake
+cp cupcake dist/
+rm main.o cupcake

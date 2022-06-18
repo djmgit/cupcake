@@ -3,8 +3,7 @@
 
 FROM ubuntu:18.04
 
-WORKDIR /asmenv
-ADD build.sh /asmenv
+WORKDIR /src
 
 # install dependencies
 RUN apt update && \
@@ -13,8 +12,6 @@ RUN apt update && \
     apt install -y vim && \
     # a simple pid 1 process for handling of singnals
     apt install -y dumb-init && \
-    #make script executable
-    chmod +x build.sh && \
     # finally install nasm
     apt install -y nasm
 
