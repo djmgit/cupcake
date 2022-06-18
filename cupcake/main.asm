@@ -60,16 +60,16 @@ sys_write_string socket_creation_message, socket_creation_message_len
     jl .quit                                                                                        ; if error, quit
     sys_write_string socket_listening_message, socket_listening_message_len                         ; show message to imply socket has started to listen for connections
 
-.accept:
-    push byte 0
-    push byte 0
-    push edi
-    mov ecx, esp
-    mov ebx, 5
-    mov eax, 102
-    int 80h
-    cmp eax, 0
-    jl .quit
+.accept:                                                                                            ; Now we start with accept call which is a blocking call
+    push byte 0                                                                                     ; address length arg
+    push byte 0                                                                                     ; address arg
+    push edi                                                                                        ; push the socket fd
+    mov ecx, esp                                                                                    ; move arg address to ecx just like we did several times earlier
+    mov ebx, 5                                                                                      ; invoke ACCEPT (5)
+    mov eax, 102                                                                                    ; syscall number for sys_socketcall
+    int 80h                                                                                         ; invoke kernel
+    cmp eax, 0                                                                                      ; on a successful accept call, we get the incomming connection socket fd in eax
+    jl .quit                                                                                        ; if eax is less than 0, it means error, quit
 
 .fork:
     mov esi, eax
