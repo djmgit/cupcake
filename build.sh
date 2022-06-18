@@ -24,4 +24,6 @@ then
 fi
 
 echo "copying binary to dist"
-cp src/cupcake dist/
+cp cupcake/cupcake dist/
+
+rm cupcake/main.o cupcake/cupcake
