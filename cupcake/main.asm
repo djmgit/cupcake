@@ -92,32 +92,31 @@ sys_write_string socket_creation_message, socket_creation_message_len
 ;
 ; TODO: implement child process reaping.
 .fork:
-    mov esi, eax
-    mov eax, 2
-    int 80h
-
-    cmp eax, 0
-    jz .read
-
-    jmp .accept
+    mov esi, eax                                                ; move client socket fd to esi, the forked process will be using this fd to read the request
+    mov eax, 2                                                  ; syscall number for sys_fork
+    int 80h                                                     ; invoke kernel
+    cmp eax, 0                                                  ; compare eax with 0
+    jz .read                                                    ; if 0 means we are in child process, jump to read section
+    jmp .accept                                                 ; we are in parent, go back to accepting new connections
 
 .read:
-    call read_from_client_socket
+    call read_from_client_socket                                ; we are in child, start reading from the client socket, generate response and write back
 
 .quit:
-    sys_quit
+    sys_quit                                                    ; exit process
 
+; initialised variables and constants for the server to function
 SECTION .data
-boot_up_message     db      'Starting cupcake on port 9001 ...', 0Ah, 0     ; assign msg variable with your message string
+boot_up_message db 'Starting cupcake on port 9001 ...', 0Ah, 0     ; assign msg variable with your message string
 boot_up_message_len equ $-boot_up_message
-socket_creation_message     db      'Creating socket ...', 0Ah, 0
-socket_creation_message_len     equ     $-socket_creation_message
-socket_bind_message     db      'Binding socket to 0.0.0.0:9001 ...', 0Ah, 0
-socket_bind_message_len     equ     $-socket_bind_message
-socket_listen_attempt_message       db      'Attempting to listen ...', 0Ah, 0
-socket_listen_attempt_message_len       equ     $-socket_listen_attempt_message
-socket_listening_message        db      'Cupcake is listenning for new connections ...', 0Ah, 0
-socket_listening_message_len        equ     $-socket_listening_message
+socket_creation_message db 'Creating socket ...', 0Ah, 0
+socket_creation_message_len equ $-socket_creation_message
+socket_bind_message db 'Binding socket to 0.0.0.0:9001 ...', 0Ah, 0
+socket_bind_message_len equ $-socket_bind_message
+socket_listen_attempt_message db 'Attempting to listen ...', 0Ah, 0
+socket_listen_attempt_message_len equ $-socket_listen_attempt_message
+socket_listening_message db 'Cupcake is listenning for new connections ...', 0Ah, 0
+socket_listening_message_len equ $-socket_listening_message
 response_http_ok db 'HTTP/1.1 200 OK', 0Dh, 0Ah, 'Content-Type: text/html', 0Dh, 0Ah, 'Content-Length: 40', 0Dh, 0Ah, 0Dh, 0Ah, '<html><head><h1>Hello</h1></head></html>', 0Dh, 0Ah, 0
 response_http_prefix db 'HTTP/1.1 200 OK', 0Dh, 0Ah, 'Content-Type: text/html', 0Dh, 0Ah, 0
 content_length_header_prefix db 'Content-Length: ', 0
@@ -126,6 +125,7 @@ response_http_prefix_len equ $-response_http_prefix
 test_msg db 'test test', 0Ah, 0
 test_msg_len equ $-test_msg
 
+; uninitialised variables
 SECTION .bss
 http_method resb 10
 http_path resb 255
@@ -134,9 +134,9 @@ http_version resb 3
 request_buffer resb 255
 response_buffer resb 2048
 file_content_buffer resb 1024
-fd_in resd 1                                ; varibale from file descriptor
-content resb 1                              ; variable from content
-bytecount resd 1                            ; variable for bytecount
+fd_in resd 1
+content resb 1
+bytecount resd 1
 content_length resb 4
 docroot resb 255
 content_path resb 512
