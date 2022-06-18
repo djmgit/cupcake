@@ -1,4 +1,3 @@
-%include 'macros.asm'
 %include 'util.asm'
 
 ; subroutine to read content from desired resource file

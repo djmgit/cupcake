@@ -1,4 +1,3 @@
-%include 'macros.asm'
 %include 'http_request_parser.asm'
 %include 'file_handler.asm'
 
