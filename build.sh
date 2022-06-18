@@ -2,7 +2,7 @@
 
 set -e
 
-cd src
+cd cupcake
 echo "Building main.asm ..."
 nasm -f elf main.asm
 if [ `echo $?` != 0 ]; then
