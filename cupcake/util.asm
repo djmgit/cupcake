@@ -37,27 +37,30 @@ itoa:
     ret                                                     ; return
 
 ; subroutine to parse commandline arguments
+; It simply copies the docroot provided to a given memory location
+; Usage: call parse_docroot
+;        Expects the docroot: string in eax
 parse_docroot:
-    push eax
+    push eax                                                ; save registers on stack
     push ebx
     push ecx
-    mov ecx, docroot
+    mov ecx, docroot                                        ; move docroot memory location to ecx
 
 .copy_docroot:
-    cmp byte [eax], 0
-    jz .finished
-    mov bl, byte [eax]
+    cmp byte [eax], 0                                       ; compare eax to 0
+    jz .finished                                            ; if 0 then return
+    mov bl, byte [eax]                                      ; copy eax to docroot memory location byte by byte
     mov byte [ecx], bl
     inc eax
     inc ecx
-    jmp .copy_docroot
+    jmp .copy_docroot                                       ; loop
 
 .finished:
-    mov byte [ecx], 0
-    pop ecx
+    mov byte [ecx], 0                                       ; null terminate the docroot
+    pop ecx                                                 ; restore registers
     pop ebx
     pop eax
-    ret
+    ret                                                     ; return
 
 generate_content_path:
     push eax
