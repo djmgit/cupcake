@@ -71,6 +71,26 @@ sys_write_string socket_creation_message, socket_creation_message_len
     cmp eax, 0                                                                                      ; on a successful accept call, we get the incomming connection socket fd in eax
     jl .quit                                                                                        ; if eax is less than 0, it means error, quit
 
+; Whenever we accept a new connection and get a connection socket, we need fork a new process and delegate the
+; work of serving the request to this new process. In this way the server does not have to wait for each and
+; every connection being served and different connections can get served parallely. Each forked process
+; after sering the request, closes the client socket and quits
+;
+; However this causes an issue as well. In linux when a proces is forked by a parent, the parent must reap the
+; process when the child finishes execution. That is the parent must wait for the child's execution to finish
+; and then read its exit code. If this is not done the child does not release its kernel resources and continues
+; to exist as a zombie process, which is bad for the host on which the server is running. Because with every
+; connection the number of zombie processes will increased and stale kernle resource blockage will also increase
+;
+; How can we see such processes? After running cupcake and send some requests to it, try executing
+; ps -aux | grep cupcake , if possibel put it on watch using
+; watch ps -aux | grep cupcake
+; and then keep sending it requests
+; processes marked as [defunct] will start popping up in the ps output.
+;
+; How parent usually reaps child processes? Using wait or waidpid calls.
+;
+; TODO: implement child process reaping.
 .fork:
     mov esi, eax
     mov eax, 2
