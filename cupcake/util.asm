@@ -62,40 +62,43 @@ parse_docroot:
     pop eax
     ret                                                     ; return
 
+; Subroutine to generate content_path from docroot and http_path variable
+; Usage: call generate_content_path
+;        expects http_path in eax
 generate_content_path:
-    push eax
+    push eax                                                ; save registers on stack
     push ebx
     push ecx
     push edx
-    mov ecx, docroot
-    mov edx, content_path
+    mov ecx, docroot                                        ; move docroot memory location to ecx
+    mov edx, content_path                                   ; move content_path memory location to edx
 
 .copy_docroot:
-    cmp byte [ecx], 0
-    jz .process_file_name
-    mov bl, byte [ecx]
+    cmp byte [ecx], 0                                       ; compare byte ponted by ecx to 0
+    jz .process_file_name                                   ; if 0 then start with copying file nname
+    mov bl, byte [ecx]                                      ; move docroot to content_path memory location byte by byte
     mov byte [edx], bl
-    inc ecx
-    inc edx
-    jmp .copy_docroot
+    inc ecx                                                 ; increment ecx
+    inc edx                                                 ; increment edx
+    jmp .copy_docroot                                       ; loop
 
 .process_file_name:
-    mov byte [edx], 2Fh
-    inc edx
+    mov byte [edx], 2Fh                                     ; add 2FH hex which is '/' at the end of docroot
+    inc edx                                                 ; increment edx to point to next byte
 
 .copy_file_name:
-    cmp byte [eax], 0
+    cmp byte [eax], 0                                       ; compare eax with 0
     jz .finished
-    mov bl, byte [eax]
+    mov bl, byte [eax]                                      ; copy http_path to content_path memory location byte by byte
     mov byte [edx], bl
-    inc eax
-    inc edx
-    jmp .copy_file_name
+    inc eax                                                 ; increment eax
+    inc edx                                                 ; increment edx
+    jmp .copy_file_name                                     ; loop
 
 .finished:
-    mov byte[edx], 0
+    mov byte[edx], 0                                        ; null terminate the content_path
     pop edx
     pop ecx
     pop ebx
     pop eax
-    ret
+    ret                                                     ; return
