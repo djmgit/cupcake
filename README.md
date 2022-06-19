@@ -42,21 +42,21 @@ Now lets fire up Cupcake using the following
 I usually prefer providing absolute path when working with paths.
 
 Cupcake should greet you with the following sereies of messages in your terminal:
-
 ```
 Starting cupcake on port 9001 ...
 Creating socket ...
 Binding socket to 0.0.0.0:9001 ...
 Attempting to listen ...
 Cupcake is listenning for new connections ...
-
 ```
 
 This means Cupcake has successfully started and is now waiting for new client connections on port 9001 (yeah the port is hardcoded).
 
 Now you can send a request to cupcake. I will use curl to send an HTTP request:
 
-```curl -v http://127.0.0.1:9001/index.html ```
+```
+curl -v http://127.0.0.1:9001/index.html
+```
 
 The content of the index.html you just created should get printed as output on your terminal.
 
@@ -67,12 +67,13 @@ To build the image, simply run:
 
 ```
 make dockerbuild
-
 ```
 
 which simply runs:
 
-``` docker build -t cupcake . ```
+``` 
+docker build -t cupcake .
+```
 
 So the image created has the name/tag cupcake. No versioning, however you can always fire this command directly to add versioning to your local images.
 
@@ -88,11 +89,10 @@ that we want to serve on docker at ```/docroot``` mount point. If you see the Do
 
 ```
 CMD ["dumb-init", "/dist/cupcake", "/docroot"]
-
 ```
 hence the mount point is ```/docroot```
 
-### Running via docker in debug mode (Use full if developing on non-linux machine like MacOS)
+### Running via docker in debug mode (Usefull if developing on non-linux machine like MacOS)
 
 If you dont have a linux machine but still want to play around may be on MacOS, then you can do so in debug mode which is nothing but
 a ubuntu docker container running in interactive mode with the entire source code mounted to it. The container already has got the essential
@@ -102,14 +102,11 @@ Start the debug container:
 
 ```
 make rundebug
-
 ```
 
 this basically runs the following under the hood
-
 ```
 docker run -it -p 9001:9001 -v `pwd`/cupcake:/src -v `pwd`/build.sh:/src/build.sh -e mode=debug --rm --name cupcake-debug cupcake-debug:latest
-
 ```
 Once we forward port 9001. Next we mount the source code directory which is ```cupcake``` under the project root to ```/src``` on docker as mountpoint.
 Also we mount the build script ```build.sh``` at ```/src/build.sh``` the practical implication of which is we get the build script available in the
@@ -119,13 +116,11 @@ Now all you have to do is make changes to the code files, then assemble and link
 
 ```
 ./build.sh
-
 ```
 
 and then run using:
 
 ```
 ./cupcake <path_to_docroot>
-
 ```
 
