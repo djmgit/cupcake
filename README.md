@@ -140,3 +140,28 @@ and then run using:
 ```
 ./cupcake <path_to_docroot>
 ```
+
+## How does Cupcake work
+
+I will try to not go too much into this since I have tried to provide as much inline documention as possible. Most of the interesting areas of
+the code have enough comments (hopefully). Still, lets try to understand what Cupcake does and how does it do what it does.
+
+Just like any other webserver, Cupcake makes using of network sockets at its heart. In short, it sets up a listenning socket, listens for incoming
+connections, accepts connections, reads data, generates response and writes back the response into the accepted client socket. It follows the
+traditional fork model of web servers where every new connecting is handled in a separate process so that other connections are not waiting.
+
+The entry point to the server is ```main.asm```. When it boots up the following things happen:
+
+- The cmdline arguments are parsed so that cupcake knows the docroot location.
+- A new linux network socket is created.
+- The created socket is ```bind```ed to an IP and PORT. Port is hardcoded to be 9001
+- The socket is then put to listenning mode.
+- The socket then starts to listen for new connections. This is the blocking step where our server loop is blocked and waiting for a new connection.
+- Whenever the accept call gets a new connection, we get a new client socket fd. When that happens we ```fork``` a new process.
+- This new process reads data from the client socket fd. Unlike a real world production grade webserver, we are not interested in the entire request data   since we only allow ```GET``` requests that too for static files from a given location. So we read a chunk of byte (hardcoded size).
+- From the chuck of data we read we try to extract required information which is the HTTP path requested. Next we prepend the docroot path infront of       this HTTP path read. For example if the path was ```index.html``` and the docroot is ```/var/docroot```, the final resurce path to read from becomes  ```/var/docroot/index.html```.
+- Next we try to read the resource (basically file) pointed to by the resource path. If we are not able to read that, may be becasause file does not       exists (or any other issue), we simple send back the 404 resource not found page. 
+
+
+
+
