@@ -15,5 +15,5 @@ clean-container:
 	docker rm cupcake-debug
 
 clean:
-	rm cupcake/*.o cupcake/cupcake
-	[ -d "dist" ] && rm -rf dist
+	rm -rf cupcake/*.o cupcake/cupcake || true
+	[ -d "dist" ] && rm -rf dist || true
