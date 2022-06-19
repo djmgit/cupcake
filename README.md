@@ -4,8 +4,9 @@ Cupcake is a tiny, simple webserver with very limited features written completel
 also known as NASM. As of the time of writing this doc, Cupcake only supports serving static files from a given docroot and is capable of showing
 a 404 response page if asked for an unknown resource. Cupcake requires linux based operating system to run since it uses the standard linux system calls 
 for interacting with the kernel.
-Cupcake is created with the pure intention of having fun with x86 assembly language and learning and exploring the same with NASM. The other intension was
-to practically learn more about how system calls in linux kernel gets invoked at the low level and get more familiarity with the linux syscall ABI.
+Cupcake is created with the pure intention of having fun with x86 assembly language and learning and exploring the same with NASM.
+The other intension wasto practically learn more about how system calls in linux kernel gets invoked at the low level and get more
+familiarity with the linux syscall ABI.
 
 ## Building and running Cupcake
 
@@ -60,6 +61,23 @@ curl -v http://127.0.0.1:9001/index.html
 
 The content of the index.html you just created should get printed as output on your terminal.
 
+**What does the make command do?***
+
+if you check the Makefile, then what you will see is that make simply runs the first recipe which is ```build```, which runs the build script.
+The build script essentially first assembles our code using nasm assembler with elf32 as the target format.
+
+```
+nasm -felf main.asm
+```
+
+Providing only main.asm is enough since that is entry point of our code and other files are include as required using ```#include``` calls.
+This provides a ```main.o``` assembled object file which is not executable.
+Next we invoke the linker to link this file and procvide us with a executable file.
+
+``` ld -m elf_i386 main.o -o cupcake ```
+
+This provides a executable named ```cupcake``` targetted for the x86 (32 bit) arch processor.
+
 ### Running via Docker
 
 There is also a Dockerfile provided to build and run Cupcake in Docker.
@@ -81,7 +99,6 @@ To run, you can use the following docker run command:
 
 ```
 docker run -p 9001:9001 --rm -v <absolute_path_to_docroot_on_your_host>/:/docroot --name cupcake cupcake
-
 ```
 
 In this command, we forward 9001 port on the host machine to 9001 port of docker since thats where cupcake will be listenning. Also we mount the folder
