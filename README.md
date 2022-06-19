@@ -1,7 +1,8 @@
 # Cupcake
 
 Cupcake is a tiny, simple webserver with very limited features written completely in x86 (32 bit) assembly from scratch and uses the Netwide Assembler
-also known as NASM. As of the time of writing this doc, Cupcake only supports serving static files from a given docroot and is capable of showing
+also known as NASM for assembing. As of the time of writing this doc, Cupcake only supports serving static files from a given docroot and is 
+capable of showing
 a 404 response page if asked for an unknown resource. Cupcake requires linux based operating system to run since it uses the standard linux system calls 
 for interacting with the kernel.
 Cupcake is created with the pure intention of having fun with x86 assembly language and learning and exploring the same with NASM.
