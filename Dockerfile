@@ -20,4 +20,4 @@ RUN apt update && \
     apt install -y nasm && \
     ./build.sh
 
-ENTRYPOINT [ "dumb-init", "dist/cupcake", "/docroot" ]
+ENTRYPOINT [ "dumb-init", "/dist/cupcake", "/docroot" ]
