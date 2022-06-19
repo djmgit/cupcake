@@ -1,5 +1,9 @@
 build:
-	./build.sh
+	cp build.sh cupcake && \
+	cd cupcake && \
+	./build.sh && \
+	rm main.o && \
+	rm build.sh
 
 dockerbuild:
 	docker build -t cupcake .
