@@ -16,3 +16,4 @@ clean-container:
 
 clean:
 	rm cupcake/*.o cupcake/cupcake
+	[ -d "dist" ] && rm -rf dist
