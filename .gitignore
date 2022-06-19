@@ -4,3 +4,4 @@ docroot
 reap.sh
 cupcake
 dist
+.DS_Store
