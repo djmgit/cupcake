@@ -8,7 +8,14 @@ global  _start
  
 _start:
 
+fetch_cmdline_args:
 pop eax                                                                             ; pop eax, this number of cmdline args
+cmp eax, 2
+jnl .valid_args
+sys_write_string invalid_arg_num_message, invalid_arg_num_message_len
+sys_quit
+
+.valid_args:
 pop eax                                                                             ; pop eax, this is the name of the program
 pop eax                                                                             ; pop eax, this is the cmdline arg provided for docroot
 call parse_docroot                                                                  ; call parse_docroot to move docroot to dedicated variable
@@ -117,11 +124,12 @@ socket_listen_attempt_message db 'Attempting to listen ...', 0Ah, 0
 socket_listen_attempt_message_len equ $-socket_listen_attempt_message
 socket_listening_message db 'Cupcake is listenning for new connections ...', 0Ah, 0
 socket_listening_message_len equ $-socket_listening_message
-response_http_ok db 'HTTP/1.1 200 OK', 0Dh, 0Ah, 'Content-Type: text/html', 0Dh, 0Ah, 'Content-Length: 40', 0Dh, 0Ah, 0Dh, 0Ah, '<html><head><h1>Hello</h1></head></html>', 0Dh, 0Ah, 0
 response_http_prefix db 'HTTP/1.1 200 OK', 0Dh, 0Ah, 'Content-Type: text/html', 0Dh, 0Ah, 0
 content_length_header_prefix db 'Content-Length: ', 0
 response_http_not_found db 'HTTP/1.1 404 NOT FOUND', 0Dh, 0Ah, 'Content-Type: text/html', 0Dh, 0Ah, 'Content-Length: 106', 0Dh, 0Ah, 0Dh, 0Ah, '<html><head><h1>Not Found</h1></head><body><p>Requested content not found on this server</p></body></html>', 0Dh, 0Ah, 0
 response_http_prefix_len equ $-response_http_prefix
+invalid_arg_num_message db 'Invalid number of arguments. Atleast 1 argument representing the docroot path is mandatory', 0Ah, 'Usage: cupcake [doctroot]', 0Ah, 0
+invalid_arg_num_message_len equ $-invalid_arg_num_message
 test_msg db 'test test', 0Ah, 0
 test_msg_len equ $-test_msg
 
