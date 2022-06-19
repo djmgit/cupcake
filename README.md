@@ -177,3 +177,17 @@ The entry point to the server is ```main.asm```. When it boots up the following 
   
   The file content we read goes right after the blank like. Also you would not want to miss the blank line after the headers. Without that innocent         looking blank line the entire response becomes invalid and no http client will be able to render/show the response.
 - Finally we right back the genearted HTTP response back to the client socket fd and then close the socket.
+
+## Things I would like add/improve
+
+Right now the project is pretty crude. As I mentioned already, ths is not for real world use, its not even close to the full feature suite provided
+by a real world webserver but that was never the intention as well. Having said that, there is still quite a few ineteresting things that I would like
+to add/fix. Hope I will do that if I dont become distracted with something else...
+
+- Several things are hardcoded right now, for example how long a HTTP path can be or how long the content read should be and lots more. Those things       should be dynamic.
+- Several parts of the code are rigid and too specific, those should be made more generic and moved to its own file or a macro.
+- Implement a redirect (302) with a default page at ```/```. I should have done this, but I guess I am just being lazy.
+- The most interesting one I guess, reap the child processes created. Currently Cupcake will create several defunct process when running natively on the   host. This is because the forked processes are not being reaped by the parent.
+
+Also I would like to mention ```gcc -S``` was not used while developing this, that would have killed the fun.
+
