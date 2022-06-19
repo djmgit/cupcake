@@ -160,8 +160,20 @@ The entry point to the server is ```main.asm```. When it boots up the following 
 - Whenever the accept call gets a new connection, we get a new client socket fd. When that happens we ```fork``` a new process.
 - This new process reads data from the client socket fd. Unlike a real world production grade webserver, we are not interested in the entire request data   since we only allow ```GET``` requests that too for static files from a given location. So we read a chunk of byte (hardcoded size).
 - From the chuck of data we read we try to extract required information which is the HTTP path requested. Next we prepend the docroot path infront of       this HTTP path read. For example if the path was ```index.html``` and the docroot is ```/var/docroot```, the final resurce path to read from becomes  ```/var/docroot/index.html```.
-- Next we try to read the resource (basically file) pointed to by the resource path. If we are not able to read that, may be becasause file does not       exists (or any other issue), we simple send back the 404 resource not found page. 
-
-
-
-
+- Next we try to read the resource (basically file) pointed to by the resource path. If we are not able to read that, may be becasause file does not       exists (or any other issue), we simple send back the 404 resource not found page.
+- If the file exists then we open it and read it byte by byte. Cupcake expects a file with a fixed given limit (hardcoded once agan).
+- Once the file is read, we generate the http response with the desired ```Content-Length``` header which is basically the size of the file read in         bytes.
+  The usual format of an HTTP response is as follows (example):
+  
+  ```
+  HTTP/1.1 200 OK
+  Content-Type: text/html
+  Content-Length: <the_length_of_content_in_bytes>
+  <other_such_headers_if_any>
+  <exactly_one_blank_line>
+  the resource content returned by the server like
+  Hellow world from Cupcake, etc ...
+  ```
+  
+  The file content we read goes right after the blank like. Also you would not want to miss the blank line after the headers. Without that innocent         looking blank line the entire response becomes invalid and no http client will be able to render/show the response.
+- Finally we right back the genearted HTTP response back to the client socket fd and then close the socket.
