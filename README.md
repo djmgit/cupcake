@@ -140,4 +140,3 @@ and then run using:
 ```
 ./cupcake <path_to_docroot>
 ```
-
