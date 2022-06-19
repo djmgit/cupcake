@@ -5,7 +5,7 @@ also known as NASM for assembling. As of the time of writing this doc, Cupcake o
 capable of showing a 404 response page if asked for an unknown resource. Cupcake requires linux based operating system to run since it uses the standard 
 linux system calls for interacting with the kernel.
 Cupcake is created with the pure intention of having fun with x86 assembly language and learning and exploring the same with NASM.
-The other intension wasto practically learn more about how system calls in linux kernel gets invoked at the low level and get more
+The other intension was to practically learn more about how system calls in linux kernel gets invoked at the low level and get more
 familiarity with the linux syscall ABI.
 
 ## Building and running Cupcake
@@ -15,7 +15,7 @@ familiarity with the linux syscall ABI.
 Cupcake can be built and run in a pretty straight forward way on machines running a linux based OS. As a prerequisite make sure you have NASM and
 GNU binutils package installed. We require binutils as it provides the linker ld which we will use to link the outout of our assembler in order
 to generate an elf file.
-Note: Cupcake has been developed using NASM version :  2.13.02 and GNU binutils version : 2.30
+Note: Cupcake has been developed using NASM version : 2.13.02 and GNU binutils version : 2.30
 
 - First clone this repository to your local.
 - Open up the repository in your terminal.
@@ -35,14 +35,14 @@ Save the following HTML file as ```index.html``` under docroot or create any HTM
 </html>
 ```
 
-Now lets fire up Cupcake using the following
+Now lets fire up Cupcake using the following command:
 
 ```
-./dist/cupcake <path_to_the_create_docroot>
+./dist/cupcake <path_to_the_created_docroot>
 ```
 I usually prefer providing absolute path when working with paths.
 
-Cupcake should greet you with the following sereies of messages in your terminal:
+Cupcake should greet you with the following series of messages in your terminal:
 ```
 Starting cupcake on port 9001 ...
 Creating socket ...
@@ -59,18 +59,19 @@ Now you can send a request to cupcake. I will use curl to send an HTTP request:
 curl -v http://127.0.0.1:9001/index.html
 ```
 
-The content of the index.html you just created should get printed as output on your terminal.
+The content of the index.html you just created should get printed as output on your terminal. You can also send the request using a web browser like
+firefox or chrome.
 
 **What does the make command do?***
 
-if you check the Makefile, then what you will see is that make simply runs the first recipe which is ```build```, which runs the build script.
+If you check the Makefile, then what you will see is that make simply runs the first recipe which is ```build```, which runs the build script.
 The build script essentially first assembles our code using nasm assembler with elf32 as the target format.
 
 ```
 nasm -felf main.asm
 ```
 
-Providing only main.asm is enough since that is entry point of our code and other files are include as required using ```#include``` calls.
+Providing only main.asm is enough since that is entry point of our code and other files are included as required using ```#include``` calls.
 This provides a ```main.o``` assembled object file which is not executable.
 Next we invoke the linker to link this file and procvide us with a executable file.
 
@@ -125,7 +126,8 @@ this basically runs the following under the hood
 ```
 docker run -it -p 9001:9001 -v `pwd`/cupcake:/src -v `pwd`/build.sh:/src/build.sh -e mode=debug --rm --name cupcake-debug cupcake-debug:latest
 ```
-Once we forward port 9001. Next we mount the source code directory which is ```cupcake``` under the project root to ```/src``` on docker as mountpoint.
+Once again we forward port 9001. Next we mount the source code directory which is ```cupcake``` under the project root
+to ```/src``` on docker as mountpoint.
 Also we mount the build script ```build.sh``` at ```/src/build.sh``` the practical implication of which is we get the build script available in the
 source code directory itself. The debug image has got ```/src``` set as the ```WORKDIR``` so as soon as we run the above command we find ourselves
 in the source code directory. 
@@ -160,7 +162,7 @@ The entry point to the server is ```main.asm```. When it boots up the following 
 - Whenever the accept call gets a new connection, we get a new client socket fd. When that happens we ```fork``` a new process.
 - This new process reads data from the client socket fd. Unlike a real world production grade webserver, we are not interested in the entire request data   since we only allow ```GET``` requests that too for static files from a given location. So we read a chunk of byte (hardcoded size).
 - From the chuck of data we read we try to extract required information which is the HTTP path requested. Next we prepend the docroot path infront of       this HTTP path read. For example if the path was ```index.html``` and the docroot is ```/var/docroot```, the final resurce path to read from becomes  ```/var/docroot/index.html```.
-- Next we try to read the resource (basically file) pointed to by the resource path. If we are not able to read that, may be becasause file does not       exists (or any other issue), we simple send back the 404 resource not found page.
+- Next we try to read the resource (basically file) pointed to by the resource path. If we are not able to read that, may be because file does not         exists (or any other issue), we simple send back the 404 resource not found page.
 - If the file exists then we open it and read it byte by byte. Cupcake expects a file with a fixed given limit (hardcoded once agan).
 - Once the file is read, we generate the http response with the desired ```Content-Length``` header which is basically the size of the file read in         bytes.
   The usual format of an HTTP response is as follows (example):
@@ -175,13 +177,14 @@ The entry point to the server is ```main.asm```. When it boots up the following 
   Hellow world from Cupcake, etc ...
   ```
   
-  The file content we read goes right after the blank like. Also you would not want to miss the blank line after the headers. Without that innocent         looking blank line the entire response becomes invalid and no http client will be able to render/show the response.
-- Finally we right back the genearted HTTP response back to the client socket fd and then close the socket.
+  The file content we read goes right after the blank line. Also you would not want to miss that blank line after the headers.
+  Without that innocent looking blank line the entire response becomes invalid and no http client will be able to render/show the response.
+- Finally we write the generated HTTP response back to the client socket fd and then close the socket.
 
-## Things I would like add/improve
+## Things I would like to add/improve
 
 Right now the project is pretty crude. As I mentioned already, ths is not for real world use, its not even close to the full feature suite provided
-by a real world webserver but that was never the intention as well. Having said that, there is still quite a few ineteresting things that I would like
+by a real world webserver but that was never the intention anyways. Having said that, there is still quite a few ineteresting things that I would like
 to add/fix. Hope I will do that if I dont become distracted with something else...
 
 - Several things are hardcoded right now, for example how long a HTTP path can be or how long the content read should be and lots more. Those things       should be dynamic.
