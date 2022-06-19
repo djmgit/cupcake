@@ -187,6 +187,7 @@ to add/fix. Hope I will do that if I dont become distracted with something else.
 - Several things are hardcoded right now, for example how long a HTTP path can be or how long the content read should be and lots more. Those things       should be dynamic.
 - Several parts of the code are rigid and too specific, those should be made more generic and moved to its own file or a macro.
 - Implement a redirect (302) with a default page at ```/```. I should have done this, but I guess I am just being lazy.
+- Error messages.
 - The most interesting one I guess, reap the child processes created. Currently Cupcake will create several defunct process when running natively on the   host. This is because the forked processes are not being reaped by the parent.
 
 Also I would like to mention ```gcc -S``` was not used while developing this, that would have killed the fun.
